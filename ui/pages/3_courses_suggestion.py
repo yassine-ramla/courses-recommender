@@ -1,45 +1,38 @@
 import streamlit as st
-import os
-import random
 import pandas as pd
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import pickle
+from models.fp_growth import fp_growth_recommend
+from models.apriori import apriori_recommend
 from mlxtend.frequent_patterns import fpgrowth, association_rules
 
 st.set_page_config(
-  page_title='courses recommender',
-  page_icon="📚",
-  layout="centered",
-  # initial_sidebar_state: InitialSideBarState = "auto"
+    page_title='Courses Recommender',
+    page_icon="📚",
+    layout="centered",
 )
 
-data_folder_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
+# Use caching to load data and rules
+@st.cache_data
+def load_data():
+    clean_user_with_courses = pd.read_csv('ui/data/clean_user_with_courses.csv')
+    rated_courses = pd.read_csv('ui/data/rated_courses.csv')
+    fp_growth_rules = pd.read_csv('ui/data/fp_growth_association_rules.csv')
+    apriori_rules = pd.read_csv('ui/data/apriori_association_rules.csv')
+    return clean_user_with_courses, rated_courses, fp_growth_rules, apriori_rules
 
-user_courses = pd.read_csv(f'{data_folder_path}/user_with_courses.csv')
+clean_user_with_courses, rated_courses, fp_growth_rules, apriori_rules = load_data()
 
-st.title('explore new courses 📚')
 
-courses = pd.read_csv(f'{data_folder_path}/course_processed.csv')
-courses.rename(columns={'COURSE_ID': 'course_id', 'TITLE': 'title', 'DESCRIPTION': 'description'}, inplace=True)
-
-ratings = pd.read_csv(f'{data_folder_path}/ratings.csv')
-ratings.rename(columns={'user': 'user_id', 'item': 'course_id'}, inplace=True)
-
-unique_rated_course_ids = ratings['course_id'].unique()
-
-rated_courses = courses[courses['course_id'].isin(unique_rated_course_ids)].reset_index(drop=True)
-
-title_to_id = dict(zip(rated_courses['title'], rated_courses['course_id']))
+# UI
+st.title('Explore New Courses 📚')
 
 selected_titles = st.multiselect(
-    "# select the courses you've watched",
+    "# Select the courses you've watched",
     rated_courses['title'], 
     help="Select the courses you have completed to get tailored recommendations.",
-    label_visibility="visible",
-  )
+)
 
-selected_ids = [title_to_id[title] for title in selected_titles]
+selected_ids = rated_courses[rated_courses['title'].isin(selected_titles)]['course_id'].to_list()
 
 algorithm = st.selectbox(
     "Choose an algorithm for recommendations:",
@@ -47,10 +40,15 @@ algorithm = st.selectbox(
     help="Choose the algorithm you prefer for generating course recommendations."
 )
 
-if st.button("Submit"):
-    if not selected_ids:
-        st.warning("Please select at least one course.")
-    elif not algorithm:
-        st.warning("Please choose an algorithm.")
+if st.button("Get Recommendations"):
+    if algorithm == 'apriori':
+        recommendations = apriori_recommend(apriori_rules, selected_ids)
+    elif algorithm == 'eclat':
+        pass
     else:
-        st.success(f"Generating recommendations using {algorithm}...")
+        recommendations = fp_growth_recommend(fp_growth_rules, selected_ids)
+    if recommendations:
+        recommended_courses = rated_courses[rated_courses['course_id'].isin(recommendations)]['title'].tolist()
+        st.write("Recommended courses:", recommended_courses)
+    else:
+        st.write("No recommendations found.")

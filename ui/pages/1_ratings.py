@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import random
 import os
 
 st.set_page_config(
@@ -10,15 +9,8 @@ st.set_page_config(
   # initial_sidebar_state: InitialSideBarState = "auto"
 )
 
-data_folder_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
-
 # ratings   
-
-ratings = pd.read_csv(f'{data_folder_path}/ratings.csv')
-
-random.seed(7)
-ratings['rating'] = ratings['rating'].apply(lambda _: random.choice([1, 1, 1.5, 2, 2.5, 2.5, 3, 3, 3, 3, 3.5, 3.5, 3.5, 3.5, 3.5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4.5, 4.5, 4, 4, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4, 4, 4, 5, 5, 5]))
-ratings.rename(columns={'user': 'user_id', 'item': 'course_id'}, inplace=True)
+ratings = pd.read_csv('ui/data/ratings.csv')
 
 st.header('📈 data story:')
 

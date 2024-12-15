@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import random
+import plotly.express as px
 import os
 
 st.set_page_config(
@@ -10,51 +10,67 @@ st.set_page_config(
   # initial_sidebar_state: InitialSideBarState = "auto"
 )
 
-# # courses 
+# # courses
 data_folder_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
 
-courses = pd.read_csv(f'{data_folder_path}/course_processed.csv')
-ratings = pd.read_csv(f'{data_folder_path}/ratings.csv')
-
-courses.rename(columns={'COURSE_ID': 'course_id', 'TITLE': 'title', 'DESCRIPTION': 'description'}, inplace=True)
-ratings.rename(columns={'user': 'user_id', 'item': 'course_id'}, inplace=True)
-random.seed(7)
-ratings['rating'] = ratings['rating'].apply(lambda _: random.choice([1, 1, 1.5, 2, 2.5, 2.5, 3, 3, 3, 3, 3.5, 3.5, 3.5, 3.5, 3.5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4.5, 4.5, 4, 4, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4, 4, 4, 5, 5, 5]))
+all_courses = pd.read_csv('ui/data/all_courses.csv')
+rated_courses = pd.read_csv('ui/data/rated_courses.csv')
+ratings_courses = pd.read_csv('ui/data/ratings_courses.csv')
 
 st.header('📈 data story:')
 
-st.subheader('courses head: ')
-st.dataframe(courses.head())
-st.subheader('courses tail: ')
-st.dataframe(courses.tail())
+st.warning('within our datasets, we have the set of all courses, from it we extracted only the rated ones which are the ones we are interested in.')
 
-ratings_courses = ratings.merge(courses, on='course_id')
-avg_courses_rating = ratings_courses.groupby(by='course_id')['rating'].mean().reset_index().rename({'rating': 'average_rating'}, axis=1)
-courses_ratings_number = ratings_courses.groupby(by='course_id')['rating'].count().reset_index().rename({'rating': 'ratings_number'}, axis=1)
-courses_ratings_summery = avg_courses_rating.merge(courses_ratings_number, on='course_id').merge(courses, on='course_id')
+# all courses
+st.subheader('∀ all courses:')
 
-st.subheader('average courses rating and ratings number: ')
-st.dataframe(courses_ratings_summery.head())
-
-ratings_number = courses['course_id'].nunique()
-missing_vals = courses.isna().sum().sum()
-courses_number = courses['course_id'].nunique()
+st.markdown('##### all courses head: ')
+st.dataframe(all_courses.head())
+st.markdown('##### all courses tail: ')
+st.dataframe(all_courses.tail())
 
 col1, col2, col3 = st.columns(3)
 
-col1.metric("number of ratings", f'{ratings_number} ⭐')
-col2.metric("missing values", f'{missing_vals} ❔')
-col3.metric("number of rated courses", f'{courses_number} 📚')
+all_courses_number = all_courses['course_id'].nunique()
+all_courses_missing_vals = all_courses.isna().sum().sum()
+all_courses_duplicated_vals = all_courses.duplicated().sum()
+
+col1.metric("number of courses", f'{all_courses_number} 📚')
+col2.metric("missing values", f'{all_courses_missing_vals} ❔')
+col3.metric("number of duplicates", f'{all_courses_duplicated_vals} 🗐')
+
+# rated courses  
+st.subheader('∃ only rated courses:')
+
+st.markdown('##### rated courses head: ')
+st.dataframe(all_courses.head())
+st.markdown('##### rated courses tail: ')
+st.dataframe(all_courses.tail())
+
+col1, col2, col3 = st.columns(3)
+
+rated_courses_number = rated_courses['course_id'].nunique()
+rated_courses_missing_vals = rated_courses.isna().sum().sum()
+rated_courses_duplicated_vals = rated_courses.duplicated().sum()
+
+col1.metric("number of courses", f'{rated_courses_number} 📚')
+col2.metric("missing values", f'{rated_courses_missing_vals} ❔')
+col3.metric("number of duplicates", f'{rated_courses_duplicated_vals} 🗐')
+
+courses_ratings_summery = ratings_courses.groupby(by='course_id')['rating'].agg(['mean', 'count']).reset_index().rename(columns={'mean': 'average_rating', 'count': 'ratings_count'}).merge(rated_courses)
+
+st.subheader('rated courses summery: ')
+st.dataframe(courses_ratings_summery.head())
 
 best_rated_courses = courses_ratings_summery.sort_values(by='average_rating', ascending=False).head(10)
 worst_rated_courses = courses_ratings_summery.sort_values(by='average_rating').head(10)
-most_rated_courses = courses_ratings_summery.sort_values(by='ratings_number',  ascending=False).head(10)
+most_rated_courses = courses_ratings_summery.sort_values(by='ratings_count',  ascending=False).head(10)
 
-st.markdown('## best rated courses:')
-st.bar_chart(best_rated_courses, x='title', y='average_rating')
+fig = px.bar(best_rated_courses, x='title', y='average_rating', orientation='v', title='Best Rated Courses')
+st.plotly_chart(fig)
 
-st.markdown('## worst rated courses:')
-st.bar_chart(worst_rated_courses, x='title', y='average_rating')
+fig = px.bar(worst_rated_courses, x='title', y='average_rating', orientation='v', title='Worst Rated Courses')
+st.plotly_chart(fig)
 
-st.markdown('## most rated courses:')
-st.bar_chart(most_rated_courses, x='title', y='ratings_number')
+fig = px.bar(most_rated_courses, x='title', y='ratings_count', orientation='v', title='Most Rated Courses')
+st.plotly_chart(fig)
