@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # ratings   
-ratings = pd.read_csv('ui/data/ratings.csv')
+ratings = pd.read_csv('data/ratings.csv')
 
 st.header('📈 data story:')
 
