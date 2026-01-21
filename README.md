@@ -5,13 +5,13 @@ This repository contains:
 - A production-ready Streamlit application (`/streamlit_app`)
 
 ## Live Demo
-[Deployed on Streamlit Cloud](DEPLOYMENT_URL)
+[Deployed on Streamlit Cloud](courses-recommender-app.streamlit.app)
 
 ## Run Locally
 
 ### 1. Clone the repository
-git clone https://github.com/your-username/your-repo.git
-cd your-repo/ui
+git clone https://github.com/yassine-ramla/courses-recommender.git
+cd /ui
 
 ### 2. Create a virtual environment (recommended)
 python -m venv venv
