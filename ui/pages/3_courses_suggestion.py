@@ -12,10 +12,10 @@ st.set_page_config(
 # Use caching to load data and rules
 @st.cache_data
 def load_data():
-    clean_user_with_courses = pd.read_csv('data/clean_user_with_courses.csv')
-    rated_courses = pd.read_csv('data/rated_courses.csv')
-    fp_growth_rules = pd.read_csv('data/fp_growth_association_rules.csv')
-    apriori_rules = pd.read_csv('data/apriori_association_rules.csv')
+    clean_user_with_courses = pd.read_csv('../data/clean_user_with_courses.csv')
+    rated_courses = pd.read_csv('../data/rated_courses.csv')
+    fp_growth_rules = pd.read_csv('../data/fp_growth_association_rules.csv')
+    apriori_rules = pd.read_csv('../data/apriori_association_rules.csv')
     return clean_user_with_courses, rated_courses, fp_growth_rules, apriori_rules
 
 clean_user_with_courses, rated_courses, fp_growth_rules, apriori_rules = load_data()

@@ -13,9 +13,9 @@ st.set_page_config(
 # # courses
 data_folder_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
 
-all_courses = pd.read_csv('data/all_courses.csv')
-rated_courses = pd.read_csv('data/rated_courses.csv')
-ratings_courses = pd.read_csv('data/ratings_courses.csv')
+all_courses = pd.read_csv('../data/all_courses.csv')
+rated_courses = pd.read_csv('../data/rated_courses.csv')
+ratings_courses = pd.read_csv('../data/ratings_courses.csv')
 
 st.header('📈 data story:')
 
