@@ -59,7 +59,7 @@ col3.metric("number of duplicates", f'{rated_courses_duplicated_vals} 🗐')
 
 courses_ratings_summery = ratings_courses.groupby(by='course_id')['rating'].agg(['mean', 'count']).reset_index().rename(columns={'mean': 'average_rating', 'count': 'ratings_count'}).merge(rated_courses)
 
-st.subheader('rated courses summery: ')
+st.subheader('rated courses summary: ')
 st.dataframe(courses_ratings_summery.head())
 
 best_rated_courses = courses_ratings_summery.sort_values(by='average_rating', ascending=False).head(10)
