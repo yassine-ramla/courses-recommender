@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from models.fp_growth import fp_growth_recommend
 from models.apriori import apriori_recommend
+import os
 
 st.set_page_config(
     page_title='Courses Recommender',
@@ -9,13 +10,15 @@ st.set_page_config(
     layout="centered",
 )
 
+data_folder_path = os.path.join(os.path.dirname(__file__), '..', 'data')
+
 # Use caching to load data and rules
 @st.cache_data
 def load_data():
-    clean_user_with_courses = pd.read_csv('../data/clean_user_with_courses.csv')
-    rated_courses = pd.read_csv('../data/rated_courses.csv')
-    fp_growth_rules = pd.read_csv('../data/fp_growth_association_rules.csv')
-    apriori_rules = pd.read_csv('../data/apriori_association_rules.csv')
+    clean_user_with_courses = pd.read_csv(os.path.join(data_folder_path,'clean_user_with_courses.csv'))
+    rated_courses = pd.read_csv(os.path.join(data_folder_path,'rated_courses.csv'))
+    fp_growth_rules = pd.read_csv(os.path.join(data_folder_path,'fp_growth_association_rules.csv'))
+    apriori_rules = pd.read_csv(os.path.join(data_folder_path,'apriori_association_rules.csv'))
     return clean_user_with_courses, rated_courses, fp_growth_rules, apriori_rules
 
 clean_user_with_courses, rated_courses, fp_growth_rules, apriori_rules = load_data()

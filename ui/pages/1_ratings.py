@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 
 st.set_page_config(
   page_title='courses recommender',
@@ -8,8 +9,10 @@ st.set_page_config(
   # initial_sidebar_state: InitialSideBarState = "auto"
 )
 
+data_folder_path = os.path.join(os.path.dirname(__file__), '..', 'data')
+
 # ratings   
-ratings = pd.read_csv('../data/ratings.csv')
+ratings = pd.read_csv(os.path.join(data_folder_path, 'ratings.csv'))
 
 st.header('📈 data story:')
 
