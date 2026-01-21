@@ -1,7 +1,4 @@
 import streamlit as st
-import pandas as pd
-import os
-import random
 
 st.set_page_config(
   page_title='courses recommender',

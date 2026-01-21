@@ -13,9 +13,9 @@ st.set_page_config(
 # # courses
 data_folder_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
 
-all_courses = pd.read_csv('ui/data/all_courses.csv')
-rated_courses = pd.read_csv('ui/data/rated_courses.csv')
-ratings_courses = pd.read_csv('ui/data/ratings_courses.csv')
+all_courses = pd.read_csv('data/all_courses.csv')
+rated_courses = pd.read_csv('data/rated_courses.csv')
+ratings_courses = pd.read_csv('data/ratings_courses.csv')
 
 st.header('📈 data story:')
 
@@ -59,7 +59,7 @@ col3.metric("number of duplicates", f'{rated_courses_duplicated_vals} 🗐')
 
 courses_ratings_summery = ratings_courses.groupby(by='course_id')['rating'].agg(['mean', 'count']).reset_index().rename(columns={'mean': 'average_rating', 'count': 'ratings_count'}).merge(rated_courses)
 
-st.subheader('rated courses summery: ')
+st.subheader('rated courses summary: ')
 st.dataframe(courses_ratings_summery.head())
 
 best_rated_courses = courses_ratings_summery.sort_values(by='average_rating', ascending=False).head(10)

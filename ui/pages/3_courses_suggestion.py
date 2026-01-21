@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
-import pickle
 from models.fp_growth import fp_growth_recommend
 from models.apriori import apriori_recommend
-from mlxtend.frequent_patterns import fpgrowth, association_rules
 
 st.set_page_config(
     page_title='Courses Recommender',
@@ -14,10 +12,10 @@ st.set_page_config(
 # Use caching to load data and rules
 @st.cache_data
 def load_data():
-    clean_user_with_courses = pd.read_csv('ui/data/clean_user_with_courses.csv')
-    rated_courses = pd.read_csv('ui/data/rated_courses.csv')
-    fp_growth_rules = pd.read_csv('ui/data/fp_growth_association_rules.csv')
-    apriori_rules = pd.read_csv('ui/data/apriori_association_rules.csv')
+    clean_user_with_courses = pd.read_csv('data/clean_user_with_courses.csv')
+    rated_courses = pd.read_csv('data/rated_courses.csv')
+    fp_growth_rules = pd.read_csv('data/fp_growth_association_rules.csv')
+    apriori_rules = pd.read_csv('data/apriori_association_rules.csv')
     return clean_user_with_courses, rated_courses, fp_growth_rules, apriori_rules
 
 clean_user_with_courses, rated_courses, fp_growth_rules, apriori_rules = load_data()

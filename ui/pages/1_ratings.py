@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import os
 
 st.set_page_config(
   page_title='courses recommender',
@@ -10,7 +9,7 @@ st.set_page_config(
 )
 
 # ratings   
-ratings = pd.read_csv('ui/data/ratings.csv')
+ratings = pd.read_csv('data/ratings.csv')
 
 st.header('📈 data story:')
 
