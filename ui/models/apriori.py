@@ -1,20 +1,17 @@
-def apriori_recommend(rules, input_courses):
-    input_courses_set = set(input_courses)
+def apriori_recommend(rules, user_courses):
+    matched_rules = rules[
+        rules["antecedents"].apply(lambda x: x.issubset(user_courses))
+    ]
     
-    rules['antecedents'] = rules['antecedents'].apply(eval)
-    rules['consequents'] = rules['consequents'].apply(eval)
+    matched_rules = matched_rules.sort_values(['lift', 'confidence'], ascending=[False, False])
     
-    matching_rules = rules[rules['antecedents'].apply(lambda x: input_courses_set.issubset(x))]
+    recommended_courses = []
+    seen = set(user_courses)
     
-    if matching_rules.empty:
-        return None
+    for consequents in matched_rules['consequents']:
+        for course in consequents:
+            if course not in seen:
+                recommended_courses.append(course)
+                seen.add(course)
     
-    matching_rules = matching_rules.sort_values(['confidence', 'lift'], ascending=[False, False])
-    
-    recommendations = set()
-    for consequent in matching_rules['consequents']:
-        recommendations.update(consequent)
-    
-    recommendations.difference_update(input_courses_set)
-    
-    return recommendations
+    return recommended_courses
